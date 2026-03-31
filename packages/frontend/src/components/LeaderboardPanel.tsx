@@ -40,7 +40,7 @@ function LeaderboardMetric({
     className: string
 }>) {
     return (
-        <div className={cn(`flex items-baseline gap-1.5 whitespace-nowrap justify-end  min-w-0`, className)}>
+        <div className={cn(`flex items-baseline gap-1.5 whitespace-nowrap justify-end min-w-0`, className)}>
             <div className="text-sm font-bold text-white sm:text-base text-right flex-0">
                 {value}
             </div>
@@ -48,36 +48,20 @@ function LeaderboardMetric({
             <div className="text-[0.58rem] uppercase tracking-[0.16em] text-slate-500 sm:text-[0.62rem] min-w-0 text-ellipsis overflow-hidden">
                 {label}
             </div>
-        </div >
+        </div>
     );
 }
 
 function getRankTone(rank: number) {
-    if (rank === 1) {
-        return `border-amber-200/70 bg-amber-300 text-slate-950 shadow-[0_0_0_3px_rgba(251,191,36,0.18)]`;
-    }
-
-    if (rank === 2) {
-        return `border-slate-100/60 bg-slate-100 text-slate-950 shadow-[0_0_0_3px_rgba(226,232,240,0.12)]`;
-    }
-
-    if (rank === 3) {
-        return `border-orange-200/60 bg-orange-300 text-slate-950 shadow-[0_0_0_3px_rgba(253,186,116,0.14)]`;
-    }
-
+    if (rank === 1) return `border-amber-200/70 bg-amber-300 text-slate-950 shadow-[0_0_0_3px_rgba(251,191,36,0.18)]`;
+    if (rank === 2) return `border-slate-100/60 bg-slate-100 text-slate-950 shadow-[0_0_0_3px_rgba(226,232,240,0.12)]`;
+    if (rank === 3) return `border-orange-200/60 bg-orange-300 text-slate-950 shadow-[0_0_0_3px_rgba(253,186,116,0.14)]`;
     return `border-white/10 bg-white/8 text-slate-200`;
 }
 
-function PersonalLeaderboardCard({
-    placement,
-}: Readonly<{
-    placement: LeaderboardPlacement | null
-}>) {
+function PersonalLeaderboardCard({ placement }: Readonly<{ placement: LeaderboardPlacement | null }>) {
     const queryAccount = useQueryAccount();
-    if (!queryAccount.data?.user) {
-    /* user is not logged in */
-        return;
-    }
+    if (!queryAccount.data?.user) return null;
 
     if (!placement) {
         return (
@@ -102,7 +86,7 @@ function PersonalLeaderboardCard({
 
     return (
         <div className="mt-5">
-            <LeaderboardCard display="self" rank={placement?.rank} player={placement} />
+            <LeaderboardCard display="self" rank={placement.rank} player={placement} />
         </div>
     );
 }
@@ -116,12 +100,10 @@ function LeaderboardCard({
     rank: number,
     player: LeaderboardPlayer,
 }>) {
-
     const kRankTones: Record<string, string> & { normal: string, self: string } = {
         "rank-1": `border-amber-300/35 bg-[linear-gradient(90deg,rgba(251,191,36,0.16),rgba(15,23,42,0.5)_42%)]`,
         "rank-2": `border-slate-200/22 bg-[linear-gradient(90deg,rgba(226,232,240,0.12),rgba(15,23,42,0.5)_42%)]`,
         "rank-3": `border-orange-300/30 bg-[linear-gradient(90deg,rgba(251,146,60,0.14),rgba(15,23,42,0.5)_42%)]`,
-
         self: `border-sky-300/25 bg-[linear-gradient(120deg,rgba(14,165,233,0.18),rgba(15,23,42,0.82)_55%)]`,
         normal: `border-white/10 bg-slate-950/36`,
     };
@@ -162,7 +144,7 @@ function LeaderboardCard({
                     `@min-[17em]:col-span-1 @min-[17em]:col-start-2`,
                     `sm:col-start-auto! sm:flex-row sm:w-auto sm:flex-nowrap sm:gap-x-5 sm:pt-0`,
                     `flex flex-row-reverse justify-end items-center w-full gap-x-2 sm:gap-x-4 gap-y-1.5 pt-0.5 text-left`,
-                    `overflow-hidden overscroll-contain`,
+                    `overflow-visible`, // changed from overflow-hidden
                 )}
                 >
                     <LeaderboardMetric label="Won" className="w-[5.5em]" value={player.gamesWon} />
@@ -190,7 +172,7 @@ export function LeaderboardSection({
                     No rated games yet, so the leaderboard is still empty.
                 </div>
             ) : (
-                <div className="mt-4 space-y-2 sm:mt-5 sm:space-y-2.5">
+                <div className="mt-4 space-y-2 sm:mt-5 sm:space-y-2.5 max-h-[480px] overflow-y-auto">
                     {leaderboard.players.map((player, index) => (
                         <LeaderboardCard
                             key={`${player.profileId}-${index}`}
